@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FoniKids V2.0 - Prototipo Didáctico</title>
+    <style>
+        /* CSS: EL DISEÑO */
+        :root {
+            --color-principal: #007bff; /* Azul Eléctrico */
+            --color-secundario: #ffc107; /* Amarillo Sol */
+            --color-fondo: #f8f9fa;
+            --color-contraste: #28a745; /* Verde para éxito */
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: var(--color-fondo);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .pantalla {
+            display: none;
+            width: 90%;
+            max-width: 600px;
+            padding: 20px;
+            background: white;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .pantalla.activa {
+            display: block;
+        }
+
+        h1 {
+            color: var(--color-principal);
+            font-size: 2.8em;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            color: var(--color-principal);
+            border-bottom: 3px solid var(--color-secundario);
+            padding-bottom: 10px;
+            margin-bottom: 25px;
+        }
+
+        button {
+            padding: 15px 30px;
+            margin: 8px;
+            border: none;
+            border-radius: 30px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.1s;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        .btn-principal {
+            background-color: var(--color-principal);
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 4px #0056b3;
+        }
+
+        .btn-principal:hover {
+            background-color: #0056b3;
+        }
+
+        .btn-menu {
+            background-color: #e9ecef;
+            color: var(--color-principal);
+            font-weight: bold;
+            border: 2px solid var(--color-principal);
+            height: 90px;
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .tarjeta-fonetica {
+            padding: 20px;
+            border: 3px solid var(--color-secundario);
+            border-radius: 20px;
+            margin-bottom: 25px;
+            background: #fffbe6; /* Color de fondo suave para las tarjetas */
+        }
+
+        .img-fonema {
+            width: 180px;
+            height: 180px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+        }
+
+        .palabra-fonema {
+            font-size: 2.5em;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .btn-audio {
+            background-color: var(--color-contraste);
+            color: white;
+            box-shadow: 0 4px #1e7e34;
+        }
+
+        .btn-audio:hover {
+            background-color: #1e7e34;
+        }
+        
+        #feedback-grabacion {
+            padding: 20px; 
+            background-color: #ffe0b2; 
+            border-radius: 10px; 
+            margin-top: 20px; 
+            display: none; /* Inicia oculto */
+        }
+
+        .btn-feedback-ok { background-color: var(--color-contraste); color: white; }
+        .btn-feedback-retry { background-color: #dc3545; color: white; }
+    </style>
+</head>
+<body>
+
+    <div id="pantalla-inicio" class="pantalla activa">
+        <h1>FoniKids 🚀</h1>
+        <p>¡Aprende, Juega y Suena Genial! (Versión 2.0)</p>
+        <img src="https://via.placeholder.com/150?text=LOGO+MONSTRUO" alt="Logo Monstruo FoniKids" class="img-fonema">
+        <button onclick="navegar('pantalla-menu')" class="btn-principal">¡Empezar a Jugar! 🎮</button>
+        <button onclick="navegar('pantalla-progreso')" class="btn-principal">Ver Perfil y Estrellas ⭐</button>
+    </div>
+
+    <div id="pantalla-menu" class="pantalla">
+        <h2>Menú de Actividades</h2>
+        <div class="menu-grid">
+            <button onclick="cargarFonemas('/R/')" class="btn-menu">1. Tarjetas Fonéticas</button>
+            <button onclick="alert('Módulo en desarrollo: Juego de Sonidos')" class="btn-menu">2. Juego de Sonidos</button>
+            <button onclick="navegar('pantalla-repeticion')" class="btn-menu">3. Repetir Palabras</button>
+            <button onclick="alert('Módulo en desarrollo: Mini-Historias')" class="btn-menu">4. Mini-Historias</button>
+            <button onclick="alert('Módulo en desarrollo: Imita Gestos (Praxias)')" class="btn-menu">5. Imita Gestos</button>
+            <button onclick="alert('Módulo en desarrollo: Buscador de Fonemas')" class="btn-menu">6. ¡Buscador de Fonemas!</button>
+        </div>
+        <button onclick="navegar('pantalla-inicio')" class="btn-principal">Volver a Inicio</button>
+    </div>
+
+    <div id="pantalla-fonemas" class="pantalla">
+        <h2 id="fonema-titulo">Fonema Actual: /R/</h2>
+        <div class="tarjeta-fonetica">
+            <img id="imagen-fonema" src="https://via.placeholder.com/200?text=RATÓN" alt="Imagen de fonema" class="img-fonema">
+            <p class="palabra-fonema" id="palabra-fonema">RATÓN</p>
+            <button onclick="reproducirAudio('raton')" class="btn-audio">Escuchar Sonido 🎧</button>
+        </div>
+
+        <div class="controles-fonema">
+            <button onclick="siguientePalabra()" class="btn-principal">Siguiente Palabra ➡️</button>
+        </div>
+        <button onclick="navegar('pantalla-menu')" class="btn-menu">Menú 🏠</button>
+    </div>
+
+    <div id="pantalla-repeticion" class="pantalla">
+        <h2>Práctica de Pronunciación: SOL</h2>
+        <p>Simulación de la práctica activa con autoevaluación.</p>
+        <div class="tarjeta-fonetica">
+             <img src="https://via.placeholder.com/200?text=IMAGEN+SOL" alt="Imagen de SOL" class="img-fonema">
+            <p class="palabra-fonema">SOL</p>
+            <button onclick="reproducirAudio('sol')" class="btn-audio">Escuchar Modelo 🎧</button>
+        </div>
+        
+        <button onclick="simularGrabacion()" class="btn-principal">Grabar mi Voz 🎤 (Simulado)</button>
+
+        <div id="feedback-grabacion">
+            <p><strong>¡ALTO!</strong> Es tu turno. Repite la palabra SOL en voz alta. El adulto te evalúa.</p>
+            <button onclick="navegar('pantalla-menu')" class="btn-feedback-ok">¡Lo Hice Bien! ✅</button>
+            <button onclick="document.getElementById('feedback-grabacion').style.display = 'none';" class="btn-feedback-retry">Necesito Repetir 🔄</button>
+        </div>
+        
+        <button onclick="navegar('pantalla-menu')" class="btn-menu">Menú 🏠</button>
+    </div>
+    
+    <div id="pantalla-progreso" class="pantalla">
+        <h2>Panel de Estrellas ⭐</h2>
+        <p>Simulación del avance del perfil: Ana.</p>
+        <p>¡Felicidades, Ana! Tienes **3 estrellas** ganadas.</p>
+        <div style="width: 80%; background-color: #ddd; border-radius: 10px; margin: 15px auto;">
+            <div style="width: 30%; height: 20px; background-color: var(--color-secundario); border-radius: 10px;"></div>
+        </div>
+        <p>Progreso en Fonemas: 30%</p>
+        <button onclick="navegar('pantalla-menu')" class="btn-principal">Menú 🏠</button>
+    </div>
+
+    <audio id="audio-raton" src="URL_A_TU_MP3_RATON.mp3"></audio>
+    <audio id="audio-sol" src="URL_A_TU_MP3_SOL.mp3"></audio>
+    
+    <script>
+        // DATOS DE LAS TARJETAS /R/
+        const fonemasR = [
+            { palabra: "RATÓN", imagen: "https://via.placeholder.com/200?text=RATON" },
+            { palabra: "ROCA", imagen: "https://via.placeholder.com/200?text=ROCA" },
+            { palabra: "ROSA", imagen: "https://via.placeholder.com/200?text=ROSA" },
+            { palabra: "RADIO", imagen: "https://via.placeholder.com/200?text=RADIO" },
+            { palabra: "RELOJ", imagen: "https://via.placeholder.com/200?text=RELOJ" }
+        ];
+
+        let palabraActualIndex = 0;
+        let fonemasActuales = fonemasR; // Inicializa con /R/
+
+        // FUNCIÓN CLAVE: CAMBIAR DE PANTALLA
+        function navegar(idDestino) {
+            const pantallas = document.querySelectorAll('.pantalla');
+            pantallas.forEach(p => p.classList.remove('activa'));
+            document.getElementById(idDestino).classList.add('activa');
+            
+            // Oculta la ventana de feedback al cambiar
+            document.getElementById('feedback-grabacion').style.display = 'none';
+        }
+
+        // Muestra la palabra actual en la tarjeta
+        function mostrarPalabra() {
+            if (fonemasActuales.length > 0) {
+                const data = fonemasActuales[palabraActualIndex];
+                // Actualiza la imagen y el texto en la tarjeta
+                document.getElementById('imagen-fonema').src = data.imagen;
+                document.getElementById('palabra-fonema').textContent = data.palabra;
+            }
+        }
+
+        // Pasa a la siguiente palabra y actualiza la tarjeta
+        function siguientePalabra() {
+            palabraActualIndex++;
+            if (palabraActualIndex >= fonemasActuales.length) {
+                alert('¡Felicidades! Terminaste el fonema /R/. ¡Vuelve al menú!');
+                navegar('pantalla-menu'); // Regresa al menú al terminar
+            } else {
+                mostrarPalabra();
+            }
+        }
+
+        // SIMULACIÓN DE AUDIO (Muestra un mensaje)
+        function reproducirAudio(nombreAudio) {
+            alert(`Simulación de Audio: Reproduciendo "${nombreAudio.toUpperCase()}". En una app real, aquí sonaría tu MP3.`);
+        }
+
+        // SIMULACIÓN DE GRABACIÓN (Muestra la ventana de autoevaluación)
+        function simularGrabacion() {
+            document.getElementById('feedback-grabacion').style.display = 'block';
+        }
+
+        // Carga el módulo de fonemas /R/ y navega a él
+        function cargarFonemas(fonema) {
+             mostrarPalabra(); // Asegura que la primera palabra se muestre
+             navegar('pantalla-fonemas');
+        }
+
+        // Inicia el simulador en la pantalla de inicio
+        document.addEventListener('DOMContentLoaded', () => {
+            navegar('pantalla-inicio');
+            mostrarPalabra(); // Carga la primera palabra /R/
+        });
+    </script>
+</body>
+</html>
